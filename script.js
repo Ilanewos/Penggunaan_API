@@ -1,42 +1,28 @@
-const apiKey = 'ff656a21-3bf4-5928-081b-fb16c8c7'; 
-const url = "https://api.goapi.io/regional/provinsi?api_key=ff656a21-3bf4-5928-081b-fb16c8c7";
+document.addEventListener('DOMContentLoaded', () => {
+    fetchProvinces();
+});
 
-    async function tampilkanProvinsi() {
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            console.log(data);
-            if (data.status === 'success') {
-                displayProvinsi(data.data);
-            } else {
-                throw new Error(data.message);
-            }
-        }catch (error) {
-            console.error('Error fetching data:', error);
-            const provinsiListDiv = document.getElementById('provinsiList');
-            if (provinsiListDiv) {
-                provinsiListDiv.innerHTML = "Terjadi kesalahan saat mengambil data: " + error.message;
-            }
-        }
-    }
+function fetchProvinces() {
+    const apiKey = 'ff656a21-3bf4-5928-081b-fb16c8c7';
+    const apiUrl = `https://api.goapi.io/regional/provinsi?api_key=ff656a21-3bf4-5928-081b-fb16c8c7`;
 
-    function displayProvinsi(provinsiList) {
-            const provinsiListDiv = document.getElementById('provinsiList');
-            if (!provinsiListDiv) {
-                console.error('Element with ID "provinsiList" not found in HTML');
-                return;
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
             }
-
-                const select = document.createElement('select');
-               
-            provinsiList.forEach(provinsi => {
-                const option = document.createElement("option");
-                option.textContent = provinsi.nama;
-                select.appendChild(option);
+            return response.json();
+        })
+        .then(data => {
+            const provinceSelect = document.getElementById('listProvinsi');
+            data.data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.id;
+                option.textContent = province.name;
+                provinceSelect.appendChild(option);
             });
-            
-            provinsiListDiv.appendChild(select);
-            provinsiListDiv.innerHTML = '';
-        }
-
-    tampilkanProvinsi();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
